@@ -62,8 +62,7 @@ try {
     if (!empty($_POST['token'])) {
         if (hash_equals($_SESSION['token'], $_POST['token'])) {
              // Proceed to process the form data
-             echo "check";
-             if (isset($_GET['email']) && isset($_GET['text'])) {
+            if (isset($_GET['email']) && isset($_GET['text'])) {
                 $email = htmlspecialchars($_GET['email'], ENT_QUOTES);
                 $text = htmlspecialchars($_GET['text'], ENT_QUOTES);
                 
@@ -74,16 +73,6 @@ try {
             echo "Invalid Input";
         }
     }
-    
-    
-    // if (isset($_GET['email']) && isset($_GET['text'])) {
-    //     $email = htmlspecialchars($_GET['email'], ENT_QUOTES);
-    //     $text = htmlspecialchars($_GET['text'], ENT_QUOTES);
-        
-    //     print "<div style=\"color: red\">Email: " . $email;
-    //     print ": " . $text . "</div><br/>";
-    // }
-
 
     $result = $conn->query("SELECT `email`, `text`, `color`, `admin` FROM `entries`");
     foreach ($result as $row) {
