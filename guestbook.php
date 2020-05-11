@@ -33,13 +33,24 @@ try {
         }
     </style>
 </head>
+
+    <?php
+
+    session_start();
+    if (empty($_SESSION['token'])) {
+        $_SESSION['token'] = bin2hex(random_bytes(32));
+    }
+
+    ?>
+
 <body>
 <div class="body-container">
     <h1 class="heading">Gastenboek 'De lekkage'</h1>
-    <form action="guestbook_get.php">
+    <form action="guestbook.php">
         Email: <input type="email" name="email"><br/>
         <input type="hidden" value="red" name="color">
         Bericht: <textarea name="text" minlength="4"></textarea><br/>
+        <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>"></input>
         <?php if (userIsAdmin($conn)) {
             echo "<input type\"hidden\" name=\"admin\" value=" . $_COOKIE['admin'] . "\">";
         } ?>
@@ -47,12 +58,31 @@ try {
     </form>
     <hr/>
     <?php
-    if (isset($_GET['email']) && isset($_GET['text'])) {
-        $email = htmlspecialchars($_GET['email'], ENT_QUOTES);
-        $text = htmlspecialchars($_GET['text'], ENT_QUOTES);
-        print "<div style=\"color: red\">Email: " . $email;
-        print ": " . $text . "</div><br/>";
+
+    if (!empty($_POST['token'])) {
+        if (hash_equals($_SESSION['token'], $_POST['token'])) {
+             // Proceed to process the form data
+             echo "check";
+             if (isset($_GET['email']) && isset($_GET['text'])) {
+                $email = htmlspecialchars($_GET['email'], ENT_QUOTES);
+                $text = htmlspecialchars($_GET['text'], ENT_QUOTES);
+                
+                print "<div style=\"color: red\">Email: " . $email;
+                print ": " . $text . "</div><br/>";
+            }
+        } else {
+            echo "Invalid Input";
+        }
     }
+    
+    
+    // if (isset($_GET['email']) && isset($_GET['text'])) {
+    //     $email = htmlspecialchars($_GET['email'], ENT_QUOTES);
+    //     $text = htmlspecialchars($_GET['text'], ENT_QUOTES);
+        
+    //     print "<div style=\"color: red\">Email: " . $email;
+    //     print ": " . $text . "</div><br/>";
+    // }
 
 
     $result = $conn->query("SELECT `email`, `text`, `color`, `admin` FROM `entries`");
